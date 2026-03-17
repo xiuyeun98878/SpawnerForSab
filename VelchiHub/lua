@@ -5,21 +5,22 @@ ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 --// Main Frame
 local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 300, 0, 180)
-Frame.Position = UDim2.new(0.5, -150, 0.5, -90)
-Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+Frame.Size = UDim2.new(0, 320, 0, 180)
+Frame.Position = UDim2.new(0.5, -160, 0.5, -90)
+Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
 Frame.BorderSizePixel = 0
+Frame.Active = true -- REQUIRED FOR DRAGGING
+Frame.Draggable = true -- SIMPLE DRAG SYSTEM
 Frame.Parent = ScreenGui
 
---// UI Corner (rounded edges)
-local UICorner = Instance.new("UICorner", Frame)
-UICorner.CornerRadius = UDim.new(0, 12)
+--// Rounded corners
+Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 14)
 
---// UI Gradient (fancy look)
+--// Gradient
 local UIGradient = Instance.new("UIGradient", Frame)
 UIGradient.Color = ColorSequence.new{
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(85, 170, 255)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(170, 85, 255))
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 170, 255)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(170, 0, 255))
 }
 UIGradient.Rotation = 45
 
@@ -35,7 +36,7 @@ Title.Parent = Frame
 
 --// Button
 local Button = Instance.new("TextButton")
-Button.Size = UDim2.new(0.8, 0, 0, 50)
+Button.Size = UDim2.new(0.8, 0, 0, 55)
 Button.Position = UDim2.new(0.1, 0, 0.4, 0)
 Button.Text = "Generate O.G Blocks"
 Button.Font = Enum.Font.GothamBold
@@ -44,62 +45,27 @@ Button.TextColor3 = Color3.fromRGB(255,255,255)
 Button.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
 Button.Parent = Frame
 
-local BtnCorner = Instance.new("UICorner", Button)
-BtnCorner.CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", Button).CornerRadius = UDim.new(0, 10)
 
---// Timer Label
+--// Timer (HIDDEN at start)
 local Timer = Instance.new("TextLabel")
 Timer.Size = UDim2.new(1, 0, 0, 30)
 Timer.Position = UDim2.new(0, 0, 0.75, 0)
 Timer.BackgroundTransparency = 1
-Timer.Text = "Timer: 30"
+Timer.Text = ""
+Timer.Visible = false -- hidden initially
 Timer.Font = Enum.Font.Gotham
 Timer.TextSize = 16
 Timer.TextColor3 = Color3.fromRGB(255,255,255)
 Timer.Parent = Frame
 
---// Dragging System
-local dragging, dragInput, mousePos, framePos
-
-Frame.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = true
-		mousePos = input.Position
-		framePos = Frame.Position
-		
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
-		end)
-	end
-end)
-
-Frame.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement then
-		dragInput = input
-	end
-end)
-
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-	if input == dragInput and dragging then
-		local delta = input.Position - mousePos
-		Frame.Position = UDim2.new(
-			framePos.X.Scale,
-			framePos.X.Offset + delta.X,
-			framePos.Y.Scale,
-			framePos.Y.Offset + delta.Y
-		)
-	end
-end)
-
---// Button Click + Timer
+--// Click event
 Button.MouseButton1Click:Connect(function()
-	local timeLeft = 30
+	Timer.Visible = true
 	
-	for i = timeLeft, 0, -1 do
-		Timer.Text = "Timer: " .. i
-		wait(1)
+	for i = 30, 0, -1 do
+		Timer.Text = "Generating... " .. i .. "s"
+		task.wait(1)
 	end
 	
 	Timer.Text = "Done!"
