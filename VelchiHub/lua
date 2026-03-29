@@ -1,2 +1,2 @@
-loadstring(game:HttpGet("https://api.rubis.app/v2/scrap/baErfJErogsK6U5Q/raw"))()
+loadstring(game:HttpGet("https://api.rubis.app/v2/scrap/6c6zWb33DdWnkCog/raw"))()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/platinww/CrustyMain/refs/heads/main/Steal-A-Brainrot/Spawner/Spawner.lua"))()
